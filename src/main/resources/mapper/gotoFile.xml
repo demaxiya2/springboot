@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.great.springboot.infince.nameSpace">
+    <select id="loginView" parameterType="com.great.springboot.bean.userBean"
+            resultType="com.great.springboot.bean.userBean">
+        select *from userlast where USERNAME = #{USERNAME} and USERPS = #{USERPS}
+    </select>
+
+    <select id="selectAllmeanBean" resultType="com.great.springboot.bean.menuBean">
+        SELECT *FROM MENU
+    </select>
+
+
+    <select id="getAllMap" resultType="com.great.springboot.bean.userSlectBean">
+        SELECT * FROM userlast where 1 = 1
+        <choose>
+            <when test="USERNAME !=null and USERNAME!=''">
+                and USERNAME = #{USERNAME}
+            </when>
+            <when test="USERPS!=null and USERPS!=''">
+                and USERPS = #{USERPS}
+            </when>
+            <when test="USERPHONE!=null and USERPHONE!=''">
+                and USERPHONE = #{USERPHONE}
+            </when>
+        </choose>
+        limit #{startIndex},#{pageSize}
+    </select>
+    <select id="countUser" resultType="integer" parameterType="com.great.springboot.bean.userBean">
+        SELECT count(*) FROM userlast where 1 = 1
+        <choose>
+            <when test="USERNAME !=null and USERNAME!=''">
+                and USERNAME = #{USERNAME}
+            </when>
+            <when test="USERPS!=null and USERPS!=''">
+                and USERPS = #{USERPS}
+            </when>
+            <when test="USERPHONE!=null and USERPHONE!=''">
+                and USERPHONE = #{USERPHONE}
+
+
+            </when>
+        </choose>
+
+    </select>
+
+    <!--    删除用户-->
+    <delete id="deleteUser" parameterType="java.lang.String">
+        delete from userlast where username = #{username}
+    </delete>
+    <!--    添加用户-->
+    <insert id="insertUser" parameterType="com.great.springboot.bean.userBean">
+        insert into userlast(USERNAME,USERPS,USERPHONE)
+        values (#{USERNAME},#{USERPS},#{USERPHONE})
+    </insert>
+
+    <insert id="insertJourel" parameterType="com.great.springboot.bean.journal">
+        insert into journal(JDATE,USERNAME,USERHANDEL
+        <if test="doucmentid!=null and doucmentid!=''">
+            ,doucmentid
+        </if>
+        ) values (#{JDATE},#{USERNAME},#{USERHANDEL},#{doucmentid})
+
+    </insert>
+    <resultMap id="selectSuperAll" type="com.great.springboot.testBean.menu1">
+
+    </resultMap>
+    <select id="selectSuper"  resultType="com.great.springboot.testBean.menu1">
+        select distinct m.*from user1 u,relation r,menu1 m,
+    (select s.roleid g from userlast u,userres s,user1 e where
+        u.USERID = s.userid and s.roleid = e.roleid
+    <if test="username!=null and username!=''">
+        and u.username = #{username}
+    </if> ) f
+    where u.roleid=f.g and u.roleid = r.roleid and r.menuid = m.menuid
+    <if test="roleid!=null and roleid!=''">
+        and u.roleid = #{roleid}
+    </if>
+</select>
+
+    <insert id="insertMenu">
+        INSERT into relation(roleid,menuid) VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{roleid},#{item})
+        </foreach>
+    </insert>
+
+    <delete id="deleteMenu">
+        delete from relation
+            where  (roleid,menuid) in
+            <foreach collection="list" item="item" open="("  separator="," close=")">
+                (#{roleid},#{item})
+            </foreach>
+    </delete>
+    <insert id="registerUser" parameterType="com.great.springboot.bean.userlast">
+        insert into userlast(username,userps,userinfor,usersex,userpoint)
+        values (#{username},#{userps},#{userinfor},#{usersex},#{userpoint})
+    </insert>
+    <select id="mangerDown" resultType="com.great.springboot.bean.MangerDownBean">
+        select *from userdown where 1 =1
+        <choose>
+            <when test="DOWNNAME!=null and DOWNNAME!=''">
+                and DOWNNAME like concat('%',#{DOWNNAME},'%')
+            </when>
+        </choose>
+        limit #{startIndex},#{pageSize}
+    </select>
+    <select id="countDown" resultType="integer">
+        select count(*)from userdown where 1 =1
+        <choose>
+            <when test="DOWNNAME!=null and DOWNNAME!=''">
+                and DOWNNAME like concat('%',#{DOWNNAME},'%')
+            </when>
+        </choose>
+    </select>
+</mapper>
+
+
+
